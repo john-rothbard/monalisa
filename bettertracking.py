@@ -50,7 +50,7 @@ while True:
                     cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 1)
             #EYE DETECTION INSIDE FACE
             roi_gray = cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY)
-            eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.3, minNeighbors=5)
+            eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.3, minNeighbors=15)
             for (ex, ey, ew, eh) in eyes:
                 pad = int(0.4 * ew)
                 pady = int(0.2 * ew)
