@@ -43,7 +43,6 @@ while True:
             
             cv2.rectangle(output, (x1, y1), (x2, y2), (0, 255, 0), 2)
 
-
             # Put confidence as a percentage above the rectangle
             text = f"{confidence:10f}"
             cv2.putText(output, text, (x1, y1 - 10),
@@ -52,13 +51,32 @@ while True:
             roi_gray = cv2.cvtColor(frame[y1:y2, x1:x2], cv2.COLOR_BGR2GRAY)
             eyes = eye_cascade.detectMultiScale(roi_gray, scaleFactor=1.3, minNeighbors=15)
             for (ex, ey, ew, eh) in eyes:
-                pad = int(0.4 * ew)
-                pady = int(0.2 * ew)
-                #cv2.rectangle(output[y1 + ey:y1 + ey + eh, x1 + ex:x1 + ex + ew].copy(),
-                             # (0, 0), (0, 0), (0, 255, 0), 2)  #tf is this for?
-                cv2.rectangle(output, (x1 + ex + pad, y1 + ey + pad), (x1 + ex + ew - pad, y1 + ey + eh - pad), (0, 255, 0), 2)
-                #cv2.circle(output, (x1 + ex + ew//2, y1 + ey + eh//2), min(ew, eh)//2, (255, 0, 0), 2)
-                cv2.rectangle(output, (x1 + ex, y1 + ey), (x1 + ex + ew, y1 + ey + eh), (255, 0, 0), 2)
+                eye_roi = frame[y1 + ey:y1 + ey + eh, x1 + ex:x1 + ex + ew]
+
+                gray = cv2.cvtColor(eye_roi, cv2.COLOR_BGR2GRAY)
+                gray_blur = cv2.GaussianBlur(gray, (7, 7), 0)
+                cv2.moveWindow("eye_blurred", ex+x1, ey+y1)
+                thresh = cv2.adaptiveThreshold(
+                    gray_blur,
+                    255,
+                    cv2.ADAPTIVE_THRESH_MEAN_C,
+                    cv2.THRESH_BINARY_INV,
+                    11,   # neighborhood size (odd)
+                    2     # constant subtracted
+                )
+                cv2.namedWindow("eye_threshold", cv2.WINDOW_NORMAL)
+                cv2.moveWindow("eye_threshold", ex+x1, ey+y1)
+                cv2.imshow("eye_threshold", thresh)
+
+
+
+
+
+
+                #pad = int(0.4 * ew)
+                #pady = int(0.2 * ew)
+                #cv2.rectangle(output, (x1 + ex + pad, y1 + ey + pad), (x1 + ex + ew - pad, y1 + ey + eh - pad), (0, 255, 0), 2)
+                #cv2.rectangle(output, (x1 + ex, y1 + ey), (x1 + ex + ew, y1 + ey + eh), (255, 0, 0), 2)
 
     cv2.imshow("DNN Face Detection", output)
 
